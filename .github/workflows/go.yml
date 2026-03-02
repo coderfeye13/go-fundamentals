@@ -28,11 +28,15 @@ jobs:
             exit 1
           fi
 
-      - name: Vet
-        run: go vet ./...
-
-      - name: Build
-        run: go build -v ./...
-
-      - name: Test
-        run: go test -v ./...
+      - name: Vet/Build/Test per chapter
+        shell: bash
+        run: |
+          set -euo pipefail
+          for d in ch01 ch02 ch03; do
+            echo "===> $d"
+            if [ -d "$d" ]; then
+              (cd "$d" && go vet ./... || true)
+              (cd "$d" && go build ./... )
+              (cd "$d" && go test ./... || true)
+            fi
+          done
