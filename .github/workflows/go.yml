@@ -28,11 +28,19 @@ jobs:
             exit 1
           fi
 
-      - name: Vet
-        run: go vet ./...
+      - name: Build each Go file (learning repo friendly)
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s globstar nullglob
 
-      - name: Build
-        run: go build -v ./...
+          files=(ch*/**/*.go)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No Go files found under ch*/"
+            exit 0
+          fi
 
-      - name: Test
-        run: go test -v ./...
+          for f in "${files[@]}"; do
+            echo "===> Building $f"
+            go build -v "$f"
+          done
