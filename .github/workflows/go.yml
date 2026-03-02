@@ -36,7 +36,7 @@ jobs:
             echo "===> $d"
             if [ -d "$d" ]; then
               (cd "$d" && go vet ./... || true)
-              (cd "$d" && go build ./... )
+              (cd "$d" && go build ./...)
               (cd "$d" && go test ./... || true)
             fi
           done
