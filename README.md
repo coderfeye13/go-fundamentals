@@ -4,22 +4,18 @@ Personal notes and exercises while learning Go, following **Learning Go, 2nd Edi
 
 ## Progress
 
-| Chapter | Topic |
-|---------|-------|
-| ch01 | Setting Up Your Go Environment |
-| ch02 | Primitive Types and Declarations |
-| ch03 | Composite Types |
-| ch04 | Blocks, Shadows, and Control Structures |
+| Chapter | Topic | Key Concepts |
+|---------|-------|--------------|
+| ch01 | Setting Up Your Go Environment | Installation, Tooling |
+| ch02 | Primitive Types and Declarations | Variables, Consts, Basic Types |
+| ch03 | Composite Types | Arrays, Slices, Maps, Structs |
+| ch04 | Blocks, Shadows, and Control Structures | If, For, Switch, Shadowing |
+| ch05 | Functions | Parameters, Defer, Closures, Errors |
 
 ## Setup
 
 ```bash
-git clone https://github.com/coderfeye13/go-fundamentals.git
+git clone [https://github.com/coderfeye13/go-fundamentals.git](https://github.com/coderfeye13/go-fundamentals.git)
 cd go-fundamentals
-go run ./ch01
-```
-
-## Tools
-
-- Go 1.21+
-- Make
+# Example running a specific chapter exercise
+go run ./ch05/exercises05.2.go
