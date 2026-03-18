@@ -13,7 +13,12 @@ func fileLen(filename string) (int, error) {
 	}
 
 	// This is a critical pattern in DevOps to prevent resource leaks.
-	defer f.Close()
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+
+		}
+	}(f)
 
 	info, err := f.Stat()
 	if err != nil {
