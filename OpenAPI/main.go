@@ -96,30 +96,40 @@ func createPet(pet Pet) (*Pet, error) {
 
 	return &created, nil
 }
-func updatePet(url string, jsonData []byte) {
-	// 1. Create a Buffer from your JSON data (this is the 'body')
+func updatePet(url string, jsonData []byte) (*Pet, error) {
+	// JSON Buffer request body
 	body := bytes.NewBuffer(jsonData)
 
-	// 2. Step — Create the request object (PUT)
 	req, err := http.NewRequest(http.MethodPut, url, body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("request creation failed: %w", err)
 	}
 
-	// 3. IMPORTANT: Tell the server we are sending JSON
 	req.Header.Set("Content-Type", "application/json")
 
-	// 4. Step — Create the client
 	client := &http.Client{}
-
-	// 5. Step — Send it!
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("PUT request failed: %w", err)
 	}
 	defer resp.Body.Close()
 
-	fmt.Println("Update Status:", resp.Status)
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status: %s", resp.Status)
+	}
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading response body failed: %w", err)
+	}
+
+	// JSON'ı Pet struct'ına çevir (Unmarshal)
+	var updatedPet Pet
+	if err := json.Unmarshal(respBody, &updatedPet); err != nil {
+		return nil, fmt.Errorf("JSON parse failed: %w", err)
+	}
+
+	return &updatedPet, nil
 }
 
 // deletePet sends a DELETE request for the given pet ID
