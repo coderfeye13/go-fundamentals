@@ -2,39 +2,42 @@ package main
 
 import "fmt"
 
-// --- BY VALUE ---
-// Go passes a COPY of the int into this function.
-// The original variable is never touched.
+// Go is always pass-by-value.
+// For primitives, passing by value means the original variable is unchanged.
+
 func doubleByValue(n int) {
 	n *= 2
 	fmt.Printf("  [inside doubleByValue] n = %d\n", n)
 }
 
-// --- BY POINTER ---
-// Go passes the memory address.
-// We dereference (*n) to reach and modify the original value.
+// When passing a pointer, Go still copies a value,
+// but that value is the pointer (address).
+// Dereferencing lets us modify the original value.
+
 func doubleByPointer(n *int) {
 	*n *= 2
 	fmt.Printf("  [inside doubleByPointer] *n = %d\n", *n)
 }
 
-// --- STRUCT: BY VALUE ---
-// Entire struct is copied. Expensive for large structs.
-// Changes do NOT affect the original.
+// Struct passed by value:
+// the function receives a copy,
+// so changes do not affect the original.
+
 type Config struct {
 	Timeout int
 	Retries int
 }
 
 func resetTimeoutByValue(c Config) {
-	c.Timeout = 0 // modifies the copy only
+	c.Timeout = 0
 }
 
-// --- STRUCT: BY POINTER ---
-// Only the address (8 bytes) is copied. Efficient.
-// Changes DO affect the original.
+// Struct passed by pointer:
+// the function receives a copy of the pointer,
+// and can modify the original struct through it.
+
 func resetTimeoutByPointer(c *Config) {
-	c.Timeout = 0 // modifies the original
+	c.Timeout = 0
 }
 
 func main() {
@@ -43,11 +46,11 @@ func main() {
 	x := 10
 	fmt.Printf("Before doubleByValue:   x = %d\n", x)
 	doubleByValue(x)
-	fmt.Printf("After  doubleByValue:   x = %d\n\n", x) // still 10
+	fmt.Printf("After  doubleByValue:   x = %d\n\n", x)
 
 	fmt.Printf("Before doubleByPointer: x = %d\n", x)
 	doubleByPointer(&x)
-	fmt.Printf("After  doubleByPointer: x = %d\n\n", x) // now 20
+	fmt.Printf("After  doubleByPointer: x = %d\n\n", x)
 
 	fmt.Println("=== Struct: Value vs Pointer ===")
 
@@ -55,9 +58,9 @@ func main() {
 
 	fmt.Printf("Before resetByValue:   Timeout = %d\n", cfg.Timeout)
 	resetTimeoutByValue(cfg)
-	fmt.Printf("After  resetByValue:   Timeout = %d\n\n", cfg.Timeout) // still 30
+	fmt.Printf("After  resetByValue:   Timeout = %d\n\n", cfg.Timeout)
 
 	fmt.Printf("Before resetByPointer: Timeout = %d\n", cfg.Timeout)
 	resetTimeoutByPointer(&cfg)
-	fmt.Printf("After  resetByPointer: Timeout = %d\n\n", cfg.Timeout) // now 0
+	fmt.Printf("After  resetByPointer: Timeout = %d\n\n", cfg.Timeout)
 }

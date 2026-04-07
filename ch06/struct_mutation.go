@@ -9,19 +9,20 @@ type Server struct {
 	Running bool
 }
 
-// updatePort modifies the server via pointer.
-// Without the *, this function would work on a COPY and changes would be lost.
+// The pointer is copied, but it still points to the same struct.
+// So changes affect the original value.
 func updatePort(s *Server, newPort int) {
-	s.Port = newPort // Go auto-dereferences: this is (*s).Port = newPort
+	s.Port = newPort // Go automatically dereferences the pointer
 }
 
+// Mutates the struct by changing its state.
 func startServer(s *Server) {
 	s.Running = true
 	fmt.Printf("Server started: %s:%d\n", s.Host, s.Port)
 }
 
+// Safe print with nil check.
 func printServer(s *Server) {
-	// Nil check — defensive programming
 	if s == nil {
 		fmt.Println("No server provided!")
 		return
@@ -30,21 +31,21 @@ func printServer(s *Server) {
 }
 
 func main() {
-	// & before struct literal → returns a pointer directly
+	// Create struct and get pointer
 	srv := &Server{
 		Host:    "localhost",
 		Port:    8080,
 		Running: false,
 	}
 
-	printServer(srv) // Host: localhost | Port: 8080 | Running: false
+	printServer(srv)
 
 	updatePort(srv, 9090)
 	startServer(srv)
 
-	printServer(srv) // Host: localhost | Port: 9090 | Running: true
+	printServer(srv)
 
-	// Nil pointer example — safe because printServer checks for nil
+	// Nil pointer example
 	var emptySrv *Server
-	printServer(emptySrv) // No server provided!
+	printServer(emptySrv)
 }

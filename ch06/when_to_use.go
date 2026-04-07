@@ -2,9 +2,7 @@ package main
 
 import "fmt"
 
-// ============================================================
-// RULE 1: USE POINTER — when you need to mutate the argument
-// ============================================================
+// RULE 1: USE POINTER when the function must modify the original value.
 
 type Counter struct {
 	Value int
@@ -14,38 +12,31 @@ func increment(c *Counter) {
 	c.Value++
 }
 
-// ============================================================
-// RULE 2: USE VALUE — for small, simple, read-only data
-// Copying an int or small struct is cheaper than indirection.
-// ============================================================
+// RULE 2: USE VALUE for small, simple, read-only data.
 
 func isEven(n int) bool {
 	return n%2 == 0
 }
 
-// ============================================================
-// RULE 3: USE POINTER — for large structs (avoid expensive copy)
-// ============================================================
+// RULE 3: CONSIDER POINTER for large structs to avoid expensive copying.
 
 type HeavyConfig struct {
-	Data    [1024]byte // 1 KB of data
+	Data    [1024]byte
 	Name    string
 	Version int
 }
 
-// Passing by pointer: only 8 bytes (address) copied, not 1 KB+
+// The pointer value is copied instead of the whole struct.
 func describeConfig(cfg *HeavyConfig) {
 	fmt.Printf("Config: %s v%d\n", cfg.Name, cfg.Version)
 }
 
-// ============================================================
-// RULE 4: USE POINTER — when nil is a valid/meaningful state
-// (optional data, missing values, uninitialized state)
-// ============================================================
+// RULE 4: USE POINTER when nil has a meaningful meaning.
+// Useful for optional fields, especially in JSON/API models.
 
 type User struct {
 	Name  string
-	Email *string // nil means "no email provided" — intentional!
+	Email *string
 }
 
 func printEmail(u User) {
@@ -56,19 +47,17 @@ func printEmail(u User) {
 	}
 }
 
-// ============================================================
-// RULE 5: USE POINTER — for method receivers that modify state
-// ============================================================
+// RULE 5: USE POINTER RECEIVERS when methods modify struct state.
 
 type Stack struct {
 	items []int
 }
 
-func (s *Stack) Push(item int) { // pointer receiver → modifies s
+func (s *Stack) Push(item int) {
 	s.items = append(s.items, item)
 }
 
-func (s Stack) Peek() int { // value receiver → read-only, no mutation
+func (s Stack) Peek() int {
 	if len(s.items) == 0 {
 		return -1
 	}
@@ -80,11 +69,11 @@ func main() {
 	c := Counter{}
 	increment(&c)
 	increment(&c)
-	fmt.Println("Counter:", c.Value) // 2
+	fmt.Println("Counter:", c.Value)
 
 	fmt.Println("\n=== Rule 2: Value for small read-only data ===")
-	fmt.Println("isEven(4):", isEven(4)) // true
-	fmt.Println("isEven(7):", isEven(7)) // false
+	fmt.Println("isEven(4):", isEven(4))
+	fmt.Println("isEven(7):", isEven(7))
 
 	fmt.Println("\n=== Rule 3: Pointer for large structs ===")
 	cfg := &HeavyConfig{Name: "AppConfig", Version: 3}
@@ -94,13 +83,13 @@ func main() {
 	email := "alice@example.com"
 	u1 := User{Name: "Alice", Email: &email}
 	u2 := User{Name: "Bob", Email: nil}
-	printEmail(u1) // Alice → alice@example.com
-	printEmail(u2) // Bob has no email on file.
+	printEmail(u1)
+	printEmail(u2)
 
 	fmt.Println("\n=== Rule 5: Pointer receiver for methods ===")
 	s := Stack{}
 	s.Push(10)
 	s.Push(20)
 	s.Push(30)
-	fmt.Println("Top of stack:", s.Peek()) // 30
+	fmt.Println("Top of stack:", s.Peek())
 }
