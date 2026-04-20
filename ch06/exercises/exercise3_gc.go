@@ -1,15 +1,31 @@
-package exercises
+package main
 
-// Exercise 3:
-// Write a function that creates a large slice of ints (size 1_000_000).
-// Fill it with values 0..999999.
-// Return the sum of all values.
-// Then run: go build -gcflags="-m"
-// Does the slice escape to the heap? Why?
+import (
+	"fmt"
+	"time"
+)
 
-func sumLargeSlice() int {
-	// 1_000_000 elemanlı slice oluştur
-	// doldur
-	// toplamı döndür
-	return 0
+type Student struct {
+	FirstName string
+	LastName  string
+	Age       int
+}
+
+func main() {
+	start := time.Now()
+
+	// Part 1 — without capacity
+	//student := []Student{}
+	// Part 2
+	student := make([]Student, 0, 10_000_000)
+
+	for i := 0; i < 10_000_000; i++ {
+		student = append(student, Student{
+			FirstName: "Ali",
+			LastName:  "Yılmaz",
+			Age:       30,
+		})
+	}
+
+	fmt.Printf("Done! len=%d time=%s\n", len(student), time.Since(start))
 }
